@@ -20,6 +20,7 @@ export function CustomerAccounts({ children }: { children: ReactNode }) {
         const back = sessionStorage.getItem('pf-oauth-return');
         if (back) {
           sessionStorage.removeItem('pf-oauth-return');
+          sessionStorage.removeItem('pf-after-login');
           if (back.startsWith('/') && !back.startsWith('//') && back !== window.location.pathname + window.location.search) void router.navigate({ to: back, replace: true });
         }
       }

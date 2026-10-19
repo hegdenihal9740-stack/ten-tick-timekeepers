@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useEffect, useRef, useState } from 'react';
 import { whatsappLink } from '@/lib/whatsapp';
 import { Reviews } from '@/components/Reviews';
+import { useCustomer } from '@/components/CustomerAccounts';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 import steelJpg from '@/assets/watch-steel.jpg';
 import blackJpg from '@/assets/watch-black.jpg';
@@ -45,6 +46,7 @@ const usd = (n: number) => n.toLocaleString('en-IN');
 export function FlipkartDetails({
   tone, open, onOpenChange, asPage = false, onBuy,
 }: { tone: WatchTone; open: boolean; onOpenChange: (o: boolean) => void; asPage?: boolean; onBuy?: (id: WatchTone) => void }) {
+  const { user: customer } = useCustomer();
   const Title = asPage ? 'h1' : DialogTitle;
   const Desc = asPage ? 'p' : DialogDescription;
   const [pick, setPick] = useState<WatchTone | null>(null);
@@ -109,7 +111,15 @@ export function FlipkartDetails({
     io.observe(el);
     return () => io.disconnect();
   }, [asPage]);
-  const buyNow = () => { if (onBuy) { onBuy(w.id); return; } cart.add(w.id); toast.success('Proceeding to checkout'); onOpenChange(false); };
+  const buyNow = () => {
+    if (!customer) {
+      sessionStorage.setItem('pf-after-login', `/checkout?item=${encodeURIComponent(w.id)}`);
+      toast.info('Please log in to continue with your purchase');
+      window.location.assign('/auth');
+      return;
+    }
+    if (onBuy) { onBuy(w.id); return; } cart.add(w.id); toast.success('Proceeding to checkout'); onOpenChange(false);
+  };
   const addCart = () => { cart.add(w.id); toast.success(`${w.name} (${dial}) added to cart`); };
   return (
     <>

@@ -29,7 +29,7 @@ function AuthPage() {
   useEffect(() => {
     if (!user) return;
     const after = sessionStorage.getItem('pf-after-login');
-    if (after && after.startsWith('/') && !after.startsWith('//')) { sessionStorage.removeItem('pf-after-login'); window.location.assign(after); return; }
+    if (after && after.startsWith('/') && !after.startsWith('//')) { sessionStorage.removeItem('pf-after-login'); window.location.replace(after); return; }
     void (supabase as any).from('profiles').select('display_name').eq('id', user.id).maybeSingle().then(({ data, error }: { data: { display_name?: string } | null; error: unknown }) => {
       if (error) setError('Your profile could not be loaded. Please try again.');
       else setName(data?.display_name ?? '');
@@ -67,7 +67,7 @@ function AuthPage() {
       sessionStorage.setItem('pf-oauth-return', dest);
       const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
       if (result.error) { sessionStorage.removeItem('pf-oauth-return'); setError(result.error.message); }
-      else if (!result.redirected) { sessionStorage.removeItem('pf-oauth-return'); sessionStorage.removeItem('pf-after-login'); window.location.assign(dest); }
+      else if (!result.redirected) { sessionStorage.removeItem('pf-oauth-return'); sessionStorage.removeItem('pf-after-login'); window.location.replace(dest); }
     }
     catch { setError('Sign-in could not be completed. Please try again.'); }
     finally { setBusy(false); }

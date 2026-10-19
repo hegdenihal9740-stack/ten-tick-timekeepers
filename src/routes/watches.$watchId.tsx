@@ -9,6 +9,7 @@ import { WatchGallery } from '@/components/WatchGallery';
 import { VirtualTryOn } from '@/components/VirtualTryOn';
 import { watches } from '@/lib/watches';
 import { cart } from '@/lib/cart';
+import { goBackOrTo } from '@/lib/back';
 import { MidnightBackdrop } from '@/components/MidnightBackdrop';
 
 export const Route = createFileRoute('/watches/$watchId')({
@@ -42,7 +43,7 @@ function WatchPage() {
   return <main className="watch-page" data-tone={watch.id}>
     <MidnightBackdrop variant="quiet" />
     <header className="watch-page-header">
-      <Button asChild variant="ghost"><Link to="/" resetScroll={false} onClick={(e) => { if (window.history.state?.__TSR_index > 0) { e.preventDefault(); window.history.back(); } }}><ArrowLeft />The collection</Link></Button>
+      <Button asChild variant="ghost"><Link to="/" resetScroll={false} onClick={(e) => { if (goBackOrTo('/')) e.preventDefault(); }}><ArrowLeft />The collection</Link></Button>
       <span className="watch-page-wordmark">THE COLLECTION</span>
       <span className="watch-page-number">0{watches.findIndex(w => w.id === watch.id) + 1} / 04</span>
     </header>

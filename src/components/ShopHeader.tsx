@@ -71,9 +71,10 @@ function MobileLogin({ open, onOpenChange }: { open: boolean; onOpenChange: (o: 
   const google = async () => {
     setBusy(true);
     try {
+      sessionStorage.setItem('pf-oauth-return', window.location.pathname + window.location.search);
       const result = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin });
-      if (result.error) { toast.error(`Google sign-in failed: ${result.error.message}`); return; }
-      if (!result.redirected) onOpenChange(false);
+      if (result.error) { sessionStorage.removeItem('pf-oauth-return'); toast.error(`Google sign-in failed: ${result.error.message}`); return; }
+      if (!result.redirected) { sessionStorage.removeItem('pf-oauth-return'); onOpenChange(false); }
     } catch { toast.error('Google sign-in could not be completed. Please try again.'); }
     finally { setBusy(false); }
   };

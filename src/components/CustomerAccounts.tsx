@@ -16,6 +16,13 @@ export function CustomerAccounts({ children }: { children: ReactNode }) {
     let active = true;
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (active) { setUser(session?.user ?? null); setReady(true); }
+      if (session?.user) {
+        const back = sessionStorage.getItem('pf-oauth-return');
+        if (back) {
+          sessionStorage.removeItem('pf-oauth-return');
+          if (back.startsWith('/') && !back.startsWith('//') && back !== window.location.pathname + window.location.search) void router.navigate({ to: back, replace: true });
+        }
+      }
       if (!['SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event)) return;
       void router.invalidate();
       if (event !== 'SIGNED_OUT') void queryClient.invalidateQueries();

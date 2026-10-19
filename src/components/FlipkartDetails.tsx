@@ -87,7 +87,19 @@ export function FlipkartDetails({
     ['Warranty', '2 Years manufacturer warranty'],
   ];
   useEffect(() => { if (!open) setPick(null); }, [open]);
-  useEffect(() => { setIdx(0); setZoom(false); setFull(false); }, [active]);
+  useEffect(() => { setIdx(0); setZoom(false); setFull(false); sliderRef.current?.scrollTo({ left: 0 }); }, [active]);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const slideTo = (i: number) => {
+    const el = sliderRef.current; if (!el) return;
+    const n = (i + imgs.length) % imgs.length;
+    el.scrollTo({ left: n * el.clientWidth, behavior: 'smooth' });
+    setIdx(n);
+  };
+  const onSlide = () => {
+    const el = sliderRef.current; if (!el) return;
+    const n = Math.round(el.scrollLeft / el.clientWidth);
+    if (n !== idx) setIdx(n);
+  };
   const actionsRef = useRef<HTMLDivElement>(null);
   const [showSticky, setShowSticky] = useState(false);
   useEffect(() => {
@@ -106,9 +118,18 @@ export function FlipkartDetails({
           <div className="fk-left">
             <span className="fk-index">{String(idx + 1).padStart(2, '0')} / {String(imgs.length).padStart(2, '0')}</span>
             <button type="button" className={`fk-wish ${wish.includes(w.id) ? 'is-on' : ''}`} aria-label="Add to wishlist" onClick={() => toast.success(wishlist.toggle(w.id) ? 'Added to wishlist' : 'Removed from wishlist')}><Heart size={18} fill={wish.includes(w.id) ? 'currentColor' : 'none'} /></button>
-            {isFeat(imgs[idx]) ? <div className="fk-imgbox is-feat">{feat}</div> : <button type="button" className="fk-imgbox" onClick={() => setFull(true)} aria-label="Open full image view"><img src={imgs[idx]} alt={w.name} /><span className="fk-zoomhint"><ZoomIn size={13} /> View full</span></button>}
+            <div className="fk-slider-wrap">
+              <div className="fk-slider" ref={sliderRef} onScroll={onSlide}>
+                {imgs.map((src) => isFeat(src)
+                  ? <div key={src} className="fk-imgbox fk-slide is-feat">{feat}</div>
+                  : <button type="button" key={src} className="fk-imgbox fk-slide" onClick={() => setFull(true)} aria-label="Open full image view"><img src={src} alt={w.name} draggable={false} /><span className="fk-zoomhint"><ZoomIn size={13} /> View full</span></button>)}
+              </div>
+              <button type="button" className="fk-slide-nav is-prev" onClick={() => slideTo(idx - 1)} aria-label="Previous image"><ChevronLeft size={20} /></button>
+              <button type="button" className="fk-slide-nav is-next" onClick={() => slideTo(idx + 1)} aria-label="Next image"><ChevronRight size={20} /></button>
+              <div className="fk-dots">{imgs.map((src, i) => <span key={src} className={i === idx ? 'is-on' : ''} />)}</div>
+            </div>
             <div className="fk-thumbs">{imgs.map((src, i) => (
-              <button type="button" key={src} className={`fk-thumb ${i === idx ? 'is-active' : ''}`} onClick={() => setIdx(i)}>{isFeat(src) ? <span className="fk-thumb-vid">Key</span> : <img src={src} alt="" />}</button>
+              <button type="button" key={src} className={`fk-thumb ${i === idx ? 'is-active' : ''}`} onClick={() => slideTo(i)}>{isFeat(src) ? <span className="fk-thumb-vid">Key</span> : <img src={src} alt="" />}</button>
             ))}</div>
           </div>
           <div className="fk-right">

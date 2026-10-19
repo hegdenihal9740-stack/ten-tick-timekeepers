@@ -94,7 +94,7 @@ function AuthPage() {
       </form>}
       {user ? <div className="mt-6 flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/">Continue shopping</Link></Button><Button variant="ghost" disabled={busy} onClick={signOut}>Sign out</Button></div> : <>
         <Button variant="link" className="my-4 px-0" onClick={() => changeMode(mode === 'forgot' ? 'login' : 'forgot')}>{mode === 'forgot' ? 'Back to login' : 'Forgot password?'}</Button>
-        {mode !== 'forgot' && <div className="space-y-3 border-t border-border pt-5"><Button variant="outline" className="w-full" disabled={busy} onClick={() => social('google')}>Continue with Google</Button><Button className="lovable-auth-button w-full" disabled={busy} onClick={() => social('lovable')}>Continue with Lovable</Button></div>}
+        {mode !== 'forgot' && <div className="space-y-3 border-t border-border pt-5"><Button variant="outline" className="w-full" disabled={busy} onClick={() => social('google')}>Continue with Google</Button></div>}
       </>}
     </>}
   </AccountLayout>;

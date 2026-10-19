@@ -60,7 +60,12 @@ function AuthPage() {
   }
   async function social(provider: 'google' | 'lovable') {
     setError(''); setBusy(true);
-    try { const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: `${window.location.origin}/auth` }); if (result.error) setError(result.error.message); }
+    try {
+      sessionStorage.setItem('pf-oauth-return', '/account');
+      const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
+      if (result.error) { sessionStorage.removeItem('pf-oauth-return'); setError(result.error.message); }
+      else if (!result.redirected) { sessionStorage.removeItem('pf-oauth-return'); await navigate({ to: '/account' }); }
+    }
     catch { setError('Sign-in could not be completed. Please try again.'); }
     finally { setBusy(false); }
   }

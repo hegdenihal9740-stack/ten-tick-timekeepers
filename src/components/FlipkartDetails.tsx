@@ -46,6 +46,7 @@ const usd = (n: number) => n.toLocaleString('en-IN');
 export function FlipkartDetails({
   tone, open, onOpenChange, asPage = false, onBuy,
 }: { tone: WatchTone; open: boolean; onOpenChange: (o: boolean) => void; asPage?: boolean; onBuy?: (id: WatchTone) => void }) {
+  const { user: customer } = useCustomer();
   const Title = asPage ? 'h1' : DialogTitle;
   const Desc = asPage ? 'p' : DialogDescription;
   const [pick, setPick] = useState<WatchTone | null>(null);

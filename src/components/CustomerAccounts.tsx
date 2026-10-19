@@ -23,7 +23,8 @@ export function CustomerAccounts({ children }: { children: ReactNode }) {
           sessionStorage.removeItem('pf-after-login');
           if (back.startsWith('/') && !back.startsWith('//') && back !== window.location.pathname + window.location.search) {
             const [path, query] = back.split('?');
-            void router.navigate({ to: path, search: query ? Object.fromEntries(new URLSearchParams(query)) : undefined, replace: true });
+            const search = query ? Object.fromEntries(new URLSearchParams(query)) : undefined;
+            void (search ? router.navigate({ to: path, search, replace: true }) : router.navigate({ to: path, replace: true }));
           }
         }
       }

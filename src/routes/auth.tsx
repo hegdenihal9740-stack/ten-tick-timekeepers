@@ -6,6 +6,7 @@ import { lovable } from '@/integrations/lovable';
 import '@lovable.dev/cloud-auth-js/styles.css';
 import { useCustomer } from '@/components/CustomerAccounts';
 import { AccountLayout } from '@/components/AccountLayout';
+import { ProfileEditor } from '@/components/ProfileEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -75,13 +76,14 @@ function AuthPage() {
   return <AccountLayout title={user ? 'My account' : mode === 'register' ? 'Create your account' : mode === 'forgot' ? 'Reset your password' : 'Welcome back'}>
     {!ready ? <p role="status">Loading your account…</p> : <>
       {user ? <p className="mb-6 break-all text-muted-foreground">{user.email}</p> : mode !== 'forgot' && <div className="mb-6 grid grid-cols-2 gap-2"><Button variant={mode === 'login' ? 'default' : 'outline'} onClick={() => changeMode('login')}>Login</Button><Button variant={mode === 'register' ? 'default' : 'outline'} onClick={() => changeMode('register')}>Register</Button></div>}
-      <form onSubmit={submit} className="space-y-5">
+      {user && <ProfileEditor userId={user.id} email={user.email ?? ''} />}
+      {!user && <form onSubmit={submit} className="space-y-5">
         {(user || mode === 'register') && <label className="block space-y-2 text-sm"><span>Full name</span><Input autoComplete="name" required value={name} maxLength={100} onChange={e => setName(e.target.value)} /></label>}
         {!user && <label className="block space-y-2 text-sm"><span>Email address</span><Input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} /></label>}
         {!user && mode !== 'forgot' && <label className="block space-y-2 text-sm"><span>Password</span><Input type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'} required minLength={8} value={password} onChange={e => setPassword(e.target.value)} />{mode === 'register' && <span className="text-muted-foreground">At least 8 characters</span>}</label>}
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}{message && <p role="status" className="text-sm text-foreground">{message}</p>}
         <Button disabled={busy} className="w-full" type="submit">{busy ? 'Please wait…' : user ? 'Save profile' : mode === 'register' ? 'Create account' : mode === 'forgot' ? 'Send reset link' : 'Sign in'}</Button>
-      </form>
+      </form>}
       {user ? <div className="mt-6 flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/">Continue shopping</Link></Button><Button variant="ghost" disabled={busy} onClick={signOut}>Sign out</Button></div> : <>
         <Button variant="link" className="my-4 px-0" onClick={() => changeMode(mode === 'forgot' ? 'login' : 'forgot')}>{mode === 'forgot' ? 'Back to login' : 'Forgot password?'}</Button>
         {mode !== 'forgot' && <div className="space-y-3 border-t border-border pt-5"><Button variant="outline" className="w-full" disabled={busy} onClick={() => social('google')}>Continue with Google</Button><Button className="lovable-auth-button w-full" disabled={busy} onClick={() => social('lovable')}>Continue with Lovable</Button></div>}

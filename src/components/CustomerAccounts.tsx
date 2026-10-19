@@ -22,8 +22,9 @@ export function CustomerAccounts({ children }: { children: ReactNode }) {
           sessionStorage.removeItem('pf-oauth-return');
           sessionStorage.removeItem('pf-after-login');
           if (back.startsWith('/') && !back.startsWith('//') && back !== window.location.pathname + window.location.search) {
-            const [path, query] = back.split('?');
-            const search = query ? Object.fromEntries(new URLSearchParams(query)) : undefined;
+            const qIndex = back.indexOf('?');
+            const path = qIndex < 0 ? back : back.slice(0, qIndex);
+            const search = qIndex < 0 ? undefined : Object.fromEntries(new URLSearchParams(back.slice(qIndex + 1)));
             void (search ? router.navigate({ to: path, search, replace: true }) : router.navigate({ to: path, replace: true }));
           }
         }

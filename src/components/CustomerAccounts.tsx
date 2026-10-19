@@ -21,7 +21,10 @@ export function CustomerAccounts({ children }: { children: ReactNode }) {
         if (back) {
           sessionStorage.removeItem('pf-oauth-return');
           sessionStorage.removeItem('pf-after-login');
-          if (back.startsWith('/') && !back.startsWith('//') && back !== window.location.pathname + window.location.search) void router.navigate({ to: back, replace: true });
+          if (back.startsWith('/') && !back.startsWith('//') && back !== window.location.pathname + window.location.search) {
+            const [path, query] = back.split('?');
+            void router.navigate({ to: path, search: query ? Object.fromEntries(new URLSearchParams(query)) : undefined, replace: true });
+          }
         }
       }
       if (!['SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event)) return;
